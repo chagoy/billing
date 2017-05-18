@@ -12,7 +12,12 @@
 */
 
 Route::get('/', function () {
-	$products = App\Product::all();
-    return view('welcome', compact('products'));
+
+    return view('welcome', compact('plans'));
 });
-Route::post('/purchases', 'PurchasesController@store');
+
+Route::post('subscriptions', 'SubscriptionsController@store');
+Route::post('stripe/webhook', 'WebhooksController@handle');
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 35);
+/******/ 	return __webpack_require__(__webpack_require__.s = 33);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -750,7 +750,7 @@ module.exports = function bind(fn, thisArg) {
 
 __webpack_require__(28);
 
-window.Vue = __webpack_require__(33);
+window.Vue = __webpack_require__(37);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -758,7 +758,7 @@ window.Vue = __webpack_require__(33);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('checkout-form', __webpack_require__(30));
+Vue.component('CheckoutForm', __webpack_require__(30));
 
 var app = new Vue({
   el: '#app'
@@ -1634,16 +1634,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['products'],
+    props: ['plans'],
 
     data: function data() {
         return {
             stripeEmail: '',
             stripeToken: '',
-            product: 1
+            plan: 1,
+            status: false
         };
     },
     created: function created() {
@@ -1653,24 +1653,35 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             key: Laracasts.stripeKey,
             image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
             locale: 'auto',
+            panelLabel: 'Subscribe for',
+            email: Laracasts.user.email,
             token: function token(_token) {
                 _this.stripeToken = _token.id;
                 _this.stripeEmail = _token.email;
 
-                axios.post('/purchases', _this.$data).then(function (response) {
+                axios.post('/subscriptions', _this.$data).then(function (response) {
                     return alert('Complete, thank you');
+                }).catch(function (error) {
+                    return _this.status = error.response.data.status;
                 });
             }
         });
     },
 
     methods: {
-        buy: function buy() {
+        subscribe: function subscribe() {
+            var plan = this.findPlanById(this.plan);
+
             this.stripe.open({
-                name: 'My book',
-                description: 'some info about the book',
+                name: plan.name,
+                description: plan.name,
                 zipCode: true,
-                amount: 5000
+                amount: plan.price
+            });
+        },
+        findPlanById: function findPlanById(id) {
+            return this.plans.find(function (plan) {
+                return plan.id == id;
             });
         }
     }
@@ -1996,7 +2007,7 @@ module.exports = function normalizeComponent (
 module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('form', {
     attrs: {
-      "action": "/purchases",
+      "action": "/subscriptions",
       "method": "POST"
     }
   }, [_c('input', {
@@ -2043,11 +2054,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: (_vm.product),
-      expression: "product"
+      value: (_vm.plan),
+      expression: "plan"
     }],
     attrs: {
-      "name": "product"
+      "name": "plan"
     },
     on: {
       "change": function($event) {
@@ -2057,15 +2068,15 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
           var val = "_value" in o ? o._value : o.value;
           return val
         });
-        _vm.product = $event.target.multiple ? $$selectedVal : $$selectedVal[0]
+        _vm.plan = $event.target.multiple ? $$selectedVal : $$selectedVal[0]
       }
     }
-  }, _vm._l((_vm.products), function(product) {
+  }, _vm._l((_vm.plans), function(plan) {
     return _c('option', {
       domProps: {
-        "value": product.id
+        "value": plan.id
       }
-    }, [_vm._v("\n            " + _vm._s(product.name) + "\n        ")])
+    }, [_vm._v("\n            " + _vm._s(plan.name) + " — $" + _vm._s(plan.price / 100) + "\n        ")])
   })), _vm._v(" "), _c('button', {
     attrs: {
       "type": "submit"
@@ -2073,10 +2084,21 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": function($event) {
         $event.preventDefault();
-        _vm.buy($event)
+        _vm.subscribe($event)
       }
     }
-  }, [_vm._v("Buy this book")])])
+  }, [_vm._v("Subscribe")]), _vm._v(" "), _c('p', {
+    directives: [{
+      name: "show",
+      rawName: "v-show",
+      value: (_vm.status),
+      expression: "status"
+    }],
+    staticClass: "help is-danger",
+    domProps: {
+      "textContent": _vm._s(_vm.status)
+    }
+  })])
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -2088,6 +2110,17 @@ if (false) {
 
 /***/ }),
 /* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(7);
+module.exports = __webpack_require__(8);
+
+
+/***/ }),
+/* 34 */,
+/* 35 */,
+/* 36 */,
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11722,10 +11755,10 @@ Vue$3.compile = compileToFunctions;
 
 module.exports = Vue$3;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(34)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38)))
 
 /***/ }),
-/* 34 */
+/* 38 */
 /***/ (function(module, exports) {
 
 var g;
@@ -11749,14 +11782,6 @@ try {
 // easier to handle this case. if(!global) { ...}
 
 module.exports = g;
-
-
-/***/ }),
-/* 35 */
-/***/ (function(module, exports, __webpack_require__) {
-
-__webpack_require__(7);
-module.exports = __webpack_require__(8);
 
 
 /***/ })

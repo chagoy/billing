@@ -11,12 +11,13 @@
                 stripeKey: "{{ config('services.stripe.key') }}"
             };
         </script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.1/css/bulma.min.css" rel="stylesheet">
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     </head>
     <body>
         <div id="app">
 
-            <checkout-form :products="{{ $products }}"></checkout-form>        
+            <checkout-form :plans="{{ $plans }}"></checkout-form>        
     
         </div>
     

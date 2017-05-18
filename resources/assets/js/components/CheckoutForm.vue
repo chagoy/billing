@@ -1,30 +1,30 @@
 <template>
-    <form action="/purchases" method="POST">
+    <form action="/subscriptions" method="POST">
 
         <input type="hidden" name="stripeToken" v-model="stripeToken">
         <input type="hidden" name="stripeEmail" v-model="stripeEmail">
 
-        <select name="product" v-model="product">
-
-            <option v-for="product in products" :value="product.id">
-                {{ product.name }}
+        <select name="plan" v-model="plan">
+            <option v-for="plan in plans" :value="plan.id">
+                {{ plan.name }} &mdash; ${{ plan.price / 100 }}
             </option>
-
         </select>
-        
-        <button type="submit" @click.prevent="buy">Buy this book</button>
+
+        <button type="submit" @click.prevent="subscribe">Subscribe</button>
+        <p class="help is-danger" v-show="status" v-text="status"></p>
     </form>
 </template>
 
 <script>
     export default {
-        props: ['products'],
+        props: ['plans'],
 
         data() {
             return {
                 stripeEmail: '',
                 stripeToken: '',
-                product: 1
+                plan: 1,
+                status: false
             };
         },
         created() {
@@ -32,23 +32,31 @@
                 key: Laracasts.stripeKey,
                 image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
                 locale: 'auto',
+                panelLabel: 'Subscribe for',
+                email: Laracasts.user.email,
                 token: (token) => {
                     this.stripeToken = token.id;
                     this.stripeEmail = token.email;
 
-                    axios.post('/purchases', this.$data)
-                        .then(response => alert('Complete, thank you'));
+                    axios.post('/subscriptions', this.$data)
+                        .then(response => alert('Complete, thank you'))
+                        .catch(error => this.status = error.response.data.status);
                 }
             });
         },
         methods: {
-            buy() {
+            subscribe() {
+                let plan = this.findPlanById(this.plan);
+
                 this.stripe.open({
-                    name: 'My book',
-                    description: 'some info about the book',
+                    name: plan.name,
+                    description: plan.name,
                     zipCode: true,
-                    amount: 5000
+                    amount: plan.price
                 });
+            },
+            findPlanById(id) {
+                return this.plans.find(plan => plan.id == id);
             }
         }
     }
